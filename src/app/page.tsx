@@ -1,6 +1,6 @@
 
 import ToDoUI from "@/components/TodoUi";
-import AddTaskModal from "@/components/AddTaskModel";
+
 
 export default function Home() {
   return (

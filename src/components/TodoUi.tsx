@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { format, addDays, startOfMonth, endOfMonth, parseISO } from "date-fns";
 import AddTaskModal from "./AddTaskModel";
 import useTodoStore from "@/store/TodoStore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ToDoUI: React.FC = () => {
   const { currentDay, setDay, todos, toggleTodo, deleteTodo, editTodo } = useTodoStore();
@@ -15,7 +17,7 @@ const ToDoUI: React.FC = () => {
     description: "",
   });
 
-  const getTodayDate = () => {
+  const getTodayDate = (): string => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return format(today, "yyyy-MM-dd");
@@ -24,8 +26,9 @@ const ToDoUI: React.FC = () => {
   useEffect(() => {
     const start = startOfMonth(new Date());
     const end = endOfMonth(new Date());
-    const dates:any = [];
+    const dates: Date[] = [];
     let current = start;
+
     while (current <= end) {
       dates.push(current);
       current = addDays(current, 1);
@@ -37,7 +40,7 @@ const ToDoUI: React.FC = () => {
 
     setTimeout(() => {
       if (scrollContainerRef.current) {
-        const todayIndex = dates.findIndex((date:any) => format(date, "yyyy-MM-dd") === today);
+        const todayIndex = dates.findIndex((date: Date) => format(date, "yyyy-MM-dd") === today);
         if (todayIndex >= 0) {
           const todayElement = scrollContainerRef.current.children[todayIndex] as HTMLElement;
           todayElement.scrollIntoView({ behavior: "smooth", inline: "center" });
@@ -46,12 +49,12 @@ const ToDoUI: React.FC = () => {
     }, 100);
   }, [setDay]);
 
-  const handleDateClick = (date: Date) => {
+  const handleDateClick = (date: Date): void => {
     const formattedDate = format(date, "yyyy-MM-dd");
     setDay(formattedDate);
   };
 
-  const handleEditSubmit = (id: number) => {
+  const handleEditSubmit = (id: number): void => {
     if (editData.title.trim() && editData.description.trim()) {
       editTodo(currentDay, id, editData);
       setEditingId(null);
@@ -72,7 +75,7 @@ const ToDoUI: React.FC = () => {
           ref={scrollContainerRef}
           className="p-4 flex overflow-x-auto no-scrollbar gap-4"
         >
-          {monthDates.map((date, index) => {
+          {monthDates.map((date: Date, index: number) => {
             const formattedDate = format(date, "yyyy-MM-dd");
             const isSelected = currentDay === formattedDate;
 
@@ -132,75 +135,18 @@ const ToDoUI: React.FC = () => {
                           </svg>
                         )}
                       </div>
-                      {editingId === todo.id ? (
-                        <div className="flex flex-col ml-3">
-                          <input
-                            type="text"
-                            value={editData.title}
-                            onChange={(e) =>
-                              setEditData({ ...editData, title: e.target.value })
-                            }
-                            placeholder="Edit title"
-                            className="mb-2 p-1 border rounded"
-                          />
-                          <textarea
-                            value={editData.description}
-                            onChange={(e) =>
-                              setEditData({ ...editData, description: e.target.value })
-                            }
-                            placeholder="Edit description"
-                            className="p-1 border rounded"
-                          />
-                        </div>
-                      ) : (
-                        <div className="ml-3">
-                          <h3
-                            className={`font-semibold ${
-                              todo.completed ? "line-through text-gray-500" : ""
-                            }`}
-                          >
-                            {todo.title}
-                          </h3>
-                          <p className="text-sm text-gray-500">{todo.description}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      {editingId === todo.id ? (
-                        <button
-                          onClick={() => handleEditSubmit(todo.id)}
-                          className="text-green-500"
-                        >
-                          Save
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setEditingId(todo.id);
-                            setEditData({
-                              title: todo.title,
-                              description: todo.description,
-                            });
-                          }}
-                          className="text-blue-500"
-                        >
-                          Edit
-                        </button>
-                      )}
-                      <button
-                        onClick={() => deleteTodo(currentDay, todo.id)}
-                        className="text-red-500"
-                      >
-                        Delete
-                      </button>
+                      <div className="ml-3">
+                        <h3 className={`font-semibold ${todo.completed ? "line-through text-gray-500" : ""}`}>
+                          {todo.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">{todo.description}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center">
-                {isCurrentDayToday() ? "No tasks for today." : "No tasks for this day."}
-              </p>
+              <p className="text-gray-500 text-center">No tasks for today.</p>
             )}
           </div>
         </div>
@@ -209,9 +155,9 @@ const ToDoUI: React.FC = () => {
         <div className="flex items-center justify-center p-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-12 h-12 p-2 text-black border-black border-2 font-bold rounded-full text-2xl text-center align-middle "
+            className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center"
           >
-            +
+            <FontAwesomeIcon icon={faPlus} />
           </button>
         </div>
       </div>
