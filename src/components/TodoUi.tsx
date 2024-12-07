@@ -135,18 +135,75 @@ const ToDoUI: React.FC = () => {
                           </svg>
                         )}
                       </div>
-                      <div className="ml-3">
-                        <h3 className={`font-semibold ${todo.completed ? "line-through text-gray-500" : ""}`}>
-                          {todo.title}
-                        </h3>
-                        <p className="text-sm text-gray-500">{todo.description}</p>
-                      </div>
+                      {editingId === todo.id ? (
+                        <div className="flex flex-col ml-3">
+                          <input
+                            type="text"
+                            value={editData.title}
+                            onChange={(e) =>
+                              setEditData({ ...editData, title: e.target.value })
+                            }
+                            placeholder="Edit title"
+                            className="mb-2 p-1 border rounded"
+                          />
+                          <textarea
+                            value={editData.description}
+                            onChange={(e) =>
+                              setEditData({ ...editData, description: e.target.value })
+                            }
+                            placeholder="Edit description"
+                            className="p-1 border rounded"
+                          />
+                        </div>
+                      ) : (
+                        <div className="ml-3">
+                          <h3
+                            className={`font-semibold ${
+                              todo.completed ? "line-through text-gray-500" : ""
+                            }`}
+                          >
+                            {todo.title}
+                          </h3>
+                          <p className="text-sm text-gray-500">{todo.description}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {editingId === todo.id ? (
+                        <button
+                          onClick={() => handleEditSubmit(todo.id)}
+                          className="text-green-500"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setEditingId(todo.id);
+                            setEditData({
+                              title: todo.title,
+                              description: todo.description,
+                            });
+                          }}
+                          className="text-blue-500"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteTodo(currentDay, todo.id)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center">No tasks for today.</p>
+              <p className="text-gray-500 text-center">
+                {isCurrentDayToday() ? "No tasks for today." : "No tasks for this day."}
+              </p>
             )}
           </div>
         </div>
